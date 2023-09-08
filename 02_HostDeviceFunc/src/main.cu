@@ -6,7 +6,15 @@ __host__ void HostOnly() {
 }
 
 __device__ void DeviceOnly() {
-  std::cout << "This function may only be called from device" << std::endl;
+  printf("This function may only be called from device\n");
+}
+
+__host__ __device__ void HostDevicePrint() {
+#if defined(__CUDA_ARCH__)
+  printf("host & device print\n");
+#else
+  std::cout << "host & device print" << std::endl;
+#endif
 }
 
 __host__ __device__ float SquareAnywhere(float x)
@@ -17,12 +25,14 @@ __host__ __device__ float SquareAnywhere(float x)
 __global__ void RunGPU(float x)
 {
     DeviceOnly();
+    HostDevicePrint();
     printf("%f\n", SquareAnywhere(x));
 }
 
 void RunCPU(float x)
 {
     HostOnly();
+    HostDevicePrint();
     std::cout << SquareAnywhere(x) << std::endl;
 }
 
